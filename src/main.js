@@ -3,6 +3,13 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 import 'bootstrap';
 
+// Import component
+import Loading from 'vue-loading-overlay';
+// Import stylesheet
+import 'vue-loading-overlay/dist/vue-loading.css';
+// Init plugin
+Vue.component('Loading',Loading);
+ 
 import App from './App';
 import router from './router';
 // import $ from 'jquery'
