@@ -12,6 +12,7 @@ Vue.component('Loading',Loading);
  
 import App from './App';
 import router from './router';
+import './bus';
 // import $ from 'jquery'
 
 Vue.config.productionTip = false;

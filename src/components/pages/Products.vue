@@ -274,12 +274,16 @@ export default {
             // vm.tempProduct.imageUrl = response.data.imageUrl;
             // vm.console.log(tempProduct);
             vm.$set(vm.tempProduct, 'imageUrl', response.data.imageUrl)
+          } else {
+             this.$bus.$emit('messsage:push', response.data.message , 'danger');
           }
         })
-    }
+    },
+    
   },
   created() {
-    this.getProducts()
-  }
-}
+    this.getProducts();
+    // this.$bus.$emit('messsage:push', 'hellohelloehllo', 'success');
+  },
+};
 </script>
