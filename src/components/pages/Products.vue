@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-right mt-4">
-      <button class="btn btn-primary" @click="openModal">建立新產品</button>
+      <button class="btn btn-primary" @click="openModal" data-target="#productModal">建立新產品</button>
       <!-- data-toggle="modal" data-target="#productModal" -->
     </div>
     <table class="table mt-4">
@@ -191,6 +191,7 @@ export default {
         // vm.products = response.data.products
       })
     }
+    
     // updateProduct() {
     //   let api = `${process.env.APIPATH}/api/${
     //     process.env.CUSTOMPATH
