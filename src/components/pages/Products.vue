@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="text-right mt-4">
-      <button class="btn btn-primary" @click="openModal" data-target="#productModal">建立新產品</button>
+      <button class="btn btn-primary" @click="openModal('new')" data-target="#productModal">建立新產品</button>
       <!-- data-toggle="modal" data-target="#productModal" -->
     </div>
     <table class="table mt-4">
@@ -30,7 +30,8 @@
             <span v-else>未啟用</span>
           </td>
           <td>
-            <button class="btn btn-outline-primary btn-sm">編輯</button>
+            <button class="btn btn-outline-primary btn-sm" @click="openModal('edit', item)">編輯</button>
+            <button class="btn btn-outline-primary btn-sm" @click="openModal('dele', item)" data-target="#delProductModal">刪除</button>
           </td>
         </tr>
       </tbody>
@@ -146,7 +147,7 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
-            <button type="button" class="btn btn-danger">確認刪除</button>
+            <button type="button" class="btn btn-danger" @click="deleteProudcts">確認刪除</button>
           </div>
         </div>
       </div>
@@ -163,35 +164,85 @@ export default {
   data() {
     return {
       products: [],
-      tempProduct: {}
+      tempProduct: {},
+      isNew: ''
     }
   },
   methods: {
     getProducts() {
-      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/products`;
+      const api = `${process.env.APIPATH}/api/${
+        process.env.CUSTOMERPATH
+      }/products`
       const vm = this
-      console.log(process.env.APIPATH, process.env.CUSTOMERPATH);
+      console.log(process.env.APIPATH, process.env.CUSTOMERPATH)
       this.$http.get(api).then(response => {
         // console.log('response.data:', response.data)
         vm.products = response.data.products
       })
     },
-    openModal() {
-      $('#productModal').modal('show')
+    openModal(isNew, item) {
+      if (isNew === 'new') {
+        console.log('new')
+        this.tempProduct = Object.assign({}, item)
+        this.isNew = 'new'
+        $('#productModal').modal('show')
+      } else if (isNew === 'edit') {
+        this.tempProduct = Object.assign({}, item)
+        this.isNew = 'edit'
+        $('#productModal').modal('show')
+      } else if (isNew === 'dele') {
+        $('#delProductModal').modal('show')
+        console.log('dele')
+        this.tempProduct = Object.assign({}, item)
+        this.isNew = 'dele'
+      }
     },
 
     updateProduct() {
-      // 原本 /products 改成 /admin/products
-      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/admin/product`;
+      // 原本 /products 改成 /admin/products  , const 改let
+      let api = `${process.env.APIPATH}/api/${
+        process.env.CUSTOMERPATH
+      }/admin/product`
+      let httpMethod = 'post'
       const vm = this
-      console.log(process.env.APIPATH, process.env.CUSTOMERPATH);
-      this.$http.post(api, { data: vm.tempProduct }).then(response => {
+      if (!vm.isNew) {
+        api = `${process.env.APIPATH}/api/${
+          process.env.CUSTOMERPATH
+        }/admin/product/${vm.tempProduct.id}`
+        httpMethod = 'put' // 修改的api 使用的是put
+      }
+      console.log(process.env.APIPATH, process.env.CUSTOMERPATH)
+      this.$http[httpMethod](api, { data: vm.tempProduct }).then(response => {
         // $http.get(api) 改成$http.post(api, {data : vm.tempProduct}) 由於送出物件的參數 由 { "data": { "title": "標題"}} 所以 vm.tempProduct要在加{}
         console.log('response.data:', response.data)
         // vm.products = response.data.products
+        if (response.data.success) {
+          $('#productModal').modal('hide')
+          vm.getProducts()
+        } else {
+          $('#productModal').modal('hide')
+          vm.getProducts()
+          console.log('新增失敗')
+        }
+      })
+    },
+    deleteProudcts() {
+      const vm = this
+      let api = `${process.env.APIPATH}/api/${
+        process.env.CUSTOMERPATH
+      }/admin/product/${vm.tempProduct.id}`
+      this.$http.delete(api).then(response => {
+        console.log(response.data)
+        if (response.data.success) {
+          $('#delProductModal').modal('hide')
+          vm.getProducts()
+          console.log('成功')
+        } else {
+          console.log('資料刪除失敗')
+        }
       })
     }
-    
+
     // updateProduct() {
     //   let api = `${process.env.APIPATH}/api/${
     //     process.env.CUSTOMPATH
