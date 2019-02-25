@@ -3,46 +3,39 @@
 
     <loading :active.sync="isLoading"></loading>
 
-    <div class="text-right mt-4">
-      <button class="btn btn-primary" @click="openModal('new')" data-target="#productModal">建立新產品</button>
-      <!-- data-toggle="modal" data-target="#productModal" -->
-    </div>
+
     <table class="table mt-4">
       <thead>
         <tr>
-          <th width="120">分類</th>
-          <th>產品名稱</th>
-          <th width="120">原價</th>
-          <th width="120">售價</th>
-          <th width="100">是否啟用</th>
-          <th width="80">編輯</th>
+          <th width="">購買時間</th>
+          <th>Email</th>
+          <th width="">購買款項</th>
+          <th width="">應付金額</th>
+          <th width="">是否付款</th>
+
         </tr>
       </thead>
       <tbody>
         <tr v-for="(item) in products" :key="item.id">
           <td>{{ item.category }}</td>
           <td>{{ item.title }}</td>
-          <td class="text-right">
+          <td >
             {{ item.origin_price  | currency }}
           </td>
-          <td class="text-right">
+          <td>
             {{ item.price | currency }}
           </td>
           <td>
             <span v-if="item.is_enabled" class="text-success">啟用</span>
             <span v-else>未啟用</span>
           </td>
-          <td>
-            <button class="btn btn-outline-primary btn-sm" @click="openModal('edit', item)">編輯</button>
-            <button class="btn btn-outline-primary btn-sm" @click="openModal('dele', item)" data-target="#delProductModal">刪除</button>
-          </td>
+
         </tr>
       </tbody>
     </table>
     <!-- table end -->
     <!-- pagination start -->
     <Pagination :pagination="pagination" v-on:getPageProducts="getProducts"></Pagination>
-
     <!-- pagination end -->
 
     <!-- Modal start -->
@@ -167,7 +160,7 @@
 
 <script>
 import $ from 'jquery';
-import Pagination from './Pagination';
+import Pagination from './pages/Pagination.vue';
 export default {
   data() {
     return {
