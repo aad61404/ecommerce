@@ -1,7 +1,7 @@
 <template>
   <div>
 
-      <loading :active.sync="isLoading"></loading>
+    <loading :active.sync="isLoading"></loading>
 
     <div class="text-right mt-4">
       <button class="btn btn-primary" @click="openModal('new')" data-target="#productModal">建立新產品</button>
@@ -39,6 +39,11 @@
         </tr>
       </tbody>
     </table>
+    <!-- table end -->
+    <!-- pagination start -->
+    <Pagination :pagination="pagination" v-on:getPageProducts="getProducts"></Pagination>
+
+    <!-- pagination end -->
 
     <!-- Modal start -->
 
@@ -161,8 +166,8 @@
 </template>
 
 <script>
-import $ from 'jquery'
-
+import $ from 'jquery';
+import Pagination from './Pagination';
 export default {
   data() {
     return {
@@ -171,22 +176,24 @@ export default {
       isNew: '',
       isLoading: false,
       status: {
-        fileUploading: false,
-      }
+        fileUploading: false
+      },
+      pagination: {},
     }
   },
   methods: {
-    getProducts() {
+    getProducts(page = 1) {
       const api = `${process.env.APIPATH}/api/${
         process.env.CUSTOMERPATH
-      }/products`
+      }/admin/products?page=${page}`;
       const vm = this
       console.log(process.env.APIPATH, process.env.CUSTOMERPATH)
-      vm.isLoading = true;
+      vm.isLoading = true
       this.$http.get(api).then(response => {
-        vm.isLoading = false;
-        // console.log('response.data:', response.data)
-        vm.products = response.data.products;
+        vm.isLoading = false
+        vm.products = response.data.products
+        vm.pagination = response.data.pagination
+        console.log('response.data.pagination:', response.data.pagination)
       })
     },
     openModal(isNew, item) {
@@ -260,7 +267,7 @@ export default {
       const url = `${process.env.APIPATH}/api/${
         process.env.CUSTOMERPATH
       }/admin/upload`
-      vm.status.fileUploading = true;
+      vm.status.fileUploading = true
       this.$http
         .post(url, formData, {
           headers: {
@@ -268,22 +275,24 @@ export default {
           }
         })
         .then(response => {
-          console.log(response.data);
-          vm.status.fileUploading = false;
+          console.log(response.data)
+          vm.status.fileUploading = false
           if (response.data.success) {
             // vm.tempProduct.imageUrl = response.data.imageUrl;
             // vm.console.log(tempProduct);
             vm.$set(vm.tempProduct, 'imageUrl', response.data.imageUrl)
           } else {
-             this.$bus.$emit('messsage:push', response.data.message , 'danger');
+            this.$bus.$emit('messsage:push', response.data.message, 'danger')
           }
         })
-    },
-    
+    }
   },
   created() {
-    this.getProducts();
+    this.getProducts()
     // this.$bus.$emit('messsage:push', 'hellohelloehllo', 'success');
   },
-};
+  components: {
+    Pagination,
+  },
+}
 </script>
