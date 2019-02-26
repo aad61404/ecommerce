@@ -14,12 +14,14 @@ import App from './App';
 import router from './router';
 import './bus';
 import currencyFilter from './filters/currency';
+import dateFilter from './filters/date';
 // import $ from 'jquery'
 
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
 axios.defaults.withCredentials = true
 Vue.filter('currency', currencyFilter);
+Vue.filter('date', dateFilter);
 
 /* eslint-disable no-new */
 new Vue({
