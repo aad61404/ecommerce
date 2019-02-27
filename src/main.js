@@ -8,21 +8,23 @@ import Loading from 'vue-loading-overlay';
 // Import stylesheet
 import 'vue-loading-overlay/dist/vue-loading.css';
 // Init plugin
-Vue.component('Loading',Loading);
+
  
 import App from './App';
 import router from './router';
 import './bus';
 import currencyFilter from './filters/currency';
 import dateFilter from './filters/date';
+import Pagination from './components/Pagination'
 // import $ from 'jquery'
 
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
-axios.defaults.withCredentials = true
 Vue.filter('currency', currencyFilter);
 Vue.filter('date', dateFilter);
-
+Vue.component('Loading',Loading);
+Vue.component('Pagination', Pagination)
+axios.defaults.withCredentials = true
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
