@@ -1,14 +1,12 @@
 <template>
   <div>
     <Navbar/>
-    <Alert></Alert>
+    <Alert/>
     <div class="container-fluid">
       <div class="row">
-        <Sidebar></Sidebar>
+        <Sidebar/>
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
           <router-view></router-view>
-          <router-view name="orderlist"></router-view>
-          <router-view name="coupon"></router-view>
         </main>
       </div>
     </div>
@@ -16,14 +14,15 @@
 </template>
 
 <script>
-import Sidebar from './Sidebar';
-import Navbar from './Navbar';
-import Alert from './AlertMessage';
+import Navbar from './Navbar'
+import Sidebar from './Sidebar'
+import Alert from './AlertMessage'
+
 export default {
   components: {
-    Sidebar,
     Navbar,
-    Alert,
-  },
-};
+    Sidebar,
+    Alert
+  }
+}
 </script>

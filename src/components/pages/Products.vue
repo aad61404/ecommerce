@@ -1,15 +1,9 @@
 <template>
   <div>
-
     <loading :active.sync="isLoading"></loading>
-
-    <div class="text-right mt-4">
-      <button
-        class="btn btn-primary"
-        @click="openModal('new')"
-        data-target="#productModal"
-      >建立新產品</button>
-      <!-- data-toggle="modal" data-target="#productModal" -->
+    <div class="text-right">
+      <button class="btn btn-primary mt-4" @click="Openmodal(true)">建立新產品</button>
+      <!-- <button class="btn btn-primary mt-4" data-toggle="modal" data-target="#productModal">建立新產品</button> -->
     </div>
     <table class="table mt-4">
       <thead>
@@ -18,54 +12,30 @@
           <th>產品名稱</th>
           <th width="120">原價</th>
           <th width="120">售價</th>
-          <th width="100">是否啟用</th>
-          <th width="80">編輯</th>
+          <th width="90">是否啟用</th>
+          <th width="120">編輯</th>
         </tr>
       </thead>
       <tbody>
-        <tr
-          v-for="(item) in products"
-          :key="item.id"
-        >
-          <td>{{ item.category }}</td>
-          <td>{{ item.title }}</td>
-          <td class="text-right">
-            {{ item.origin_price | currency }}
-          </td>
-          <td class="text-right">
-            {{ item.price | currency }}
-          </td>
+        <tr v-for="item in products" :key="item.id">
+          <td>{{item.category}}</td>
+          <td>{{item.title}}</td>
+          <td class="text-right">{{item.origin_price|currency}}</td>
+          <td class="text-right">{{item.price|currency}}</td>
           <td>
-            <span
-              v-if="item.is_enabled"
-              class="text-success"
-            >啟用</span>
+            <span v-if="item.is_enabled" class="text-success">啟用</span>
             <span v-else>未啟用</span>
           </td>
           <td>
-            <button
-              class="btn btn-outline-primary btn-sm"
-              @click="openModal('edit', item)"
-            >編輯</button>
-            <button
-              class="btn btn-outline-primary btn-sm"
-              @click="openModal('dele', item)"
-              data-target="#delProductModal"
-            >刪除</button>
+            <button class="btn btn-outline-primary btn-sm" @click="Openmodal(false,item)">編輯</button>
+            <button class="btn btn-outline-danger btn-sm" @click="Opendeletemodal(item)">刪除</button>
           </td>
         </tr>
       </tbody>
     </table>
-    <!-- table end -->
-    <!-- pagination start -->
-    <Pagination
-      :page-data="pagination"
-      @pagemove="getProducts"
-    ></Pagination>
-    <!-- pagination end -->
-
-    <!-- Modal start -->
-
+ 
+    <Pagination :page-data="pagination" @pagemove="getProducts"></Pagination>
+    <!-- add&edit Modal -->
     <div
       class="modal fade"
       id="productModal"
@@ -74,24 +44,13 @@
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
     >
-      <div
-        class="modal-dialog modal-lg"
-        role="document"
-      >
+      <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content border-0">
           <div class="modal-header bg-dark text-white">
-            <h5
-              class="modal-title"
-              id="exampleModalLabel"
-            >
+            <h5 class="modal-title" id="exampleModalLabel">
               <span>新增產品</span>
             </h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -107,30 +66,26 @@
                     v-model="tempProduct.imageUrl"
                     placeholder="請輸入圖片連結"
                   >
-                  <!-- 增加 v-model="tempProduct.imageUrl"  -->
                 </div>
                 <div class="form-group">
-                  <label for="customFile">或 上傳圖片
-                    <i
-                      class="fas fa-spinner fa-spin"
-                      v-if="status.fileUploading"
-                    ></i>
+                  <label for="customFile">
+                    或 上傳圖片
+                    <i class="fas fa-cog fa-spin" v-if="status.fileUploading"></i>
                   </label>
                   <input
                     type="file"
                     id="customFile"
+                    @change="uploadFile"
                     class="form-control"
                     ref="files"
-                    @change="uploadFile"
                   >
                 </div>
                 <img
                   img="https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-0.3.5&ixid=eyJhcHBfaWQiOjEyMDd9&s=828346ed697837ce808cae68d3ddc3cf&auto=format&fit=crop&w=1350&q=80"
                   class="img-fluid"
                   :src="tempProduct.imageUrl"
-                  alt=""
+                  alt
                 >
-                <!-- 增加 :src="tempProduct.imageUrl"  -->
               </div>
               <div class="col-sm-8">
                 <div class="form-group">
@@ -142,7 +97,6 @@
                     v-model="tempProduct.title"
                     placeholder="請輸入標題"
                   >
-                  <!-- 增加 v-model="tempProduct.title"  -->
                 </div>
 
                 <div class="form-row">
@@ -155,7 +109,6 @@
                       v-model="tempProduct.category"
                       placeholder="請輸入分類"
                     >
-                    <!-- 增加 v-model="tempProduct.category"  -->
                   </div>
                   <div class="form-group col-md-6">
                     <label for="price">單位</label>
@@ -166,7 +119,6 @@
                       v-model="tempProduct.unit"
                       placeholder="請輸入單位"
                     >
-                    <!-- 增加 v-model="tempProduct.unit"  -->
                   </div>
                 </div>
 
@@ -180,7 +132,6 @@
                       v-model="tempProduct.origin_price"
                       placeholder="請輸入原價"
                     >
-                    <!-- 增加 v-model="tempProduct.origin_price"  -->
                   </div>
                   <div class="form-group col-md-6">
                     <label for="price">售價</label>
@@ -191,7 +142,6 @@
                       v-model="tempProduct.price"
                       placeholder="請輸入售價"
                     >
-                    <!-- 增加 v-model="tempProduct.price"  -->
                   </div>
                 </div>
                 <hr>
@@ -205,7 +155,6 @@
                     v-model="tempProduct.description"
                     placeholder="請輸入產品描述"
                   ></textarea>
-                  <!-- 增加 v-model="tempProduct.description"  -->
                 </div>
                 <div class="form-group">
                   <label for="content">說明內容</label>
@@ -216,7 +165,6 @@
                     v-model="tempProduct.content"
                     placeholder="請輸入產品說明內容"
                   ></textarea>
-                  <!-- 增加 v-model="tempProduct.content"  -->
                 </div>
                 <div class="form-group">
                   <div class="form-check">
@@ -228,33 +176,21 @@
                       :false-value="0"
                       id="is_enabled"
                     >
-                    <!-- 增加 v-model="tempProduct.is_enabled" true , false-value  -->
-                    <label
-                      class="form-check-label"
-                      for="is_enabled"
-                    >
-                      是否啟用
-                    </label>
+                    <label class="form-check-label" for="is_enabled">是否啟用</label>
                   </div>
                 </div>
               </div>
             </div>
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              data-dismiss="modal"
-            >取消</button>
-            <button
-              type="button"
-              class="btn btn-primary"
-              @click="updateProduct"
-            >確認</button>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-primary" @click="updateProduct">確認</button>
           </div>
         </div>
       </div>
     </div>
+    <!-- add&edit Modal -->
+    <!-- delete Modal -->
     <div
       class="modal fade"
       id="delProductModal"
@@ -263,24 +199,13 @@
       aria-labelledby="exampleModalLabel"
       aria-hidden="true"
     >
-      <div
-        class="modal-dialog"
-        role="document"
-      >
+      <div class="modal-dialog" role="document">
         <div class="modal-content border-0">
           <div class="modal-header bg-danger text-white">
-            <h5
-              class="modal-title"
-              id="exampleModalLabel"
-            >
+            <h5 class="modal-title" id="exampleModalLabel">
               <span>刪除產品</span>
             </h5>
-            <button
-              type="button"
-              class="close"
-              data-dismiss="modal"
-              aria-label="Close"
-            >
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
@@ -289,27 +214,18 @@
             <strong class="text-danger">{{ tempProduct.title }}</strong> 商品(刪除後將無法恢復)。
           </div>
           <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-outline-secondary"
-              data-dismiss="modal"
-            >取消</button>
-            <button
-              type="button"
-              class="btn btn-danger"
-              @click="deleteProudcts"
-            >確認刪除</button>
+            <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-danger" @click="deleteProduct">確認刪除</button>
           </div>
         </div>
       </div>
     </div>
-    <!-- Modal end -->
+    <!-- delete Modal -->
   </div>
-  <!-- div end -->
 </template>
 
 <script>
-import $ from "jquery";
+import $ from 'jquery';
 
 export default {
   data() {
@@ -317,130 +233,102 @@ export default {
       products: [],
       pagination: {},
       tempProduct: {},
-      isNew: "",
-      isLoading: false,
+      isNew: false,
+      isLoading: false, // true時啟動loading效果
       status: {
-        fileUploading: false
+        fileUploading: false,
       }
-      // pagination: {
-      //   total_pages: 1,
-      //   current_page: 1,
-      //   has_pre: false,
-      //   has_next: false,
-      //   category: null
-      // }
     };
   },
   methods: {
     getProducts(page = 1) {
+      // 給個預設值page = 1
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/admin/products?page=${page}`;
       const vm = this;
-      console.log("api:", api);
-      console.log(process.env.APIPATH, process.env.CUSTOMERPATH);
       vm.isLoading = true;
       this.$http.get(api).then(response => {
-        console.log("response:", response);
+        console.log(response.data);
+                if (response.data.success) {
         vm.isLoading = false;
-        if (response.data.success) {
-          vm.products = response.data.products;
-          vm.pagination = response.data.pagination;
-        }
-      });
+        vm.products = response.data.products;
+        vm.pagination = response.data.pagination;
+                }
+      })
     },
-    openModal(isNew, item) {
-      if (isNew === "new") {
-        console.log("new");
-        this.tempProduct = Object.assign({}, item);
-        this.isNew = "new";
-        $("#productModal").modal("show");
-      } else if (isNew === "edit") {
-        this.tempProduct = Object.assign({}, item);
-        this.isNew = "edit";
-        $("#productModal").modal("show");
-      } else if (isNew === "dele") {
-        $("#delProductModal").modal("show");
-        console.log("dele");
-        this.tempProduct = Object.assign({}, item);
-        this.isNew = "dele";
+    Openmodal(isNew, item) {
+      if (isNew) {
+        this.tempProduct = {};
+        this.isNew = true;
+      } else {
+        this.tempProduct = Object.assign({}, item);// 將item寫入空物件來避免this.tempProduct=item會直接傳參考
+        this.isNew = false;
       }
+      $('#productModal').modal('show');
     },
-
     updateProduct() {
-      // 原本 /products 改成 /admin/products  , const 改let
-      let api = `${process.env.APIPATH}/api/${
-        process.env.CUSTOMERPATH
-      }/admin/product`;
-      let httpMethod = "post";
+      let api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/admin/product`;
+      let httpMethod = 'post';
       const vm = this;
-      if (vm.isNew === "edit") {
-        api = `${process.env.APIPATH}/api/${
-          process.env.CUSTOMERPATH
-        }/admin/product/${vm.tempProduct.id}`;
-        httpMethod = "put"; // 修改的api 使用的是put
+      if (!vm.isNew) {
+        api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/admin/product/${vm.tempProduct.id}`;
+        httpMethod = 'put';
       }
-      console.log(process.env.APIPATH, process.env.CUSTOMERPATH);
       this.$http[httpMethod](api, { data: vm.tempProduct }).then(response => {
-        // $http.get(api) 改成$http.post(api, {data : vm.tempProduct}) 由於送出物件的參數 由 { "data": { "title": "標題"}} 所以 vm.tempProduct要在加{}
-        console.log("response.data:", response.data);
-        // vm.products = response.data.products
-        if (response.data.success) {
-          $("#productModal").modal("hide");
-          vm.getProducts();
-        } else {
-          $("#productModal").modal("hide");
-          vm.getProducts();
-          console.log("新增失敗");
-        }
-      });
-    },
-    deleteProudcts() {
-      const vm = this;
-      let api = `${process.env.APIPATH}/api/${
-        process.env.CUSTOMERPATH
-      }/admin/product/${vm.tempProduct.id}`;
-      this.$http.delete(api).then(response => {
         console.log(response.data);
         if (response.data.success) {
-          $("#delProductModal").modal("hide");
-          vm.getProducts();
-          console.log("成功");
+          $('#productModal').modal('hide');
+          vm.getProducts(vm.pagination.current_page);
         } else {
-          console.log("資料刪除失敗");
+          $('#productModal').modal('hide');
+          vm.getProducts();
+          console.log('新增失敗');
         }
-      });
+      })
+    },
+    Opendeletemodal(item) {
+      this.tempProduct = Object.assign({}, item);// 將item寫入空物件來避免this.tempProduct=item會直接傳參考
+      $('#delProductModal').modal('show');
+    },
+    deleteProduct() {
+      const vm = this;
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/admin/product/${vm.tempProduct.id}`;
+      this.$http.delete(api).then(response => {
+        if (response.data.success) {
+          vm.getProducts();
+          console.log('刪除成功');
+        } else {
+          vm.getProducts();
+          console.log('刪除失敗');
+        }
+        $('#delProductModal').modal('hide');
+      })
     },
     uploadFile() {
-      console.log("this:", this);
+      console.log(this);
       const uploadedFile = this.$refs.files.files[0];
       const vm = this;
       const formData = new FormData();
-      formData.append("file-to-upload", uploadedFile);
-      const url = `${process.env.APIPATH}/api/${
-        process.env.CUSTOMERPATH
-      }/admin/upload`;
+      formData.append('file-to-upload', uploadedFile);// 新增欄位
+      const url = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/admin/upload`;
       vm.status.fileUploading = true;
-      this.$http
-        .post(url, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        })
-        .then(response => {
-          console.log(response.data);
-          vm.status.fileUploading = false;
-          if (response.data.success) {
-            // vm.tempProduct.imageUrl = response.data.imageUrl;
-            // vm.console.log(tempProduct);
-            vm.$set(vm.tempProduct, "imageUrl", response.data.imageUrl);
-          } else {
-            this.$bus.$emit("messsage:push", response.data.message, "danger");
-          }
-        });
+      vm.$http.post(url, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then((response) => {
+        console.log(response.data);
+        vm.status.fileUploading = false;
+        if (response.data.success) {
+          // vm.tempProduct.imageUrl = response.data.imageUrl; 僅寫入
+          vm.$set(vm.tempProduct, 'imageUrl', response.data.imageUrl);// 寫入並綁定
+        } else {
+          this.$bus.$emit('message:push', response.data.message, 'danger');
+        }
+      })
     }
   },
   created() {
     this.getProducts();
-    // this.$bus.$emit('messsage:push', 'hellohelloehllo', 'success');
   }
-};
+}
 </script>
