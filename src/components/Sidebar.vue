@@ -14,11 +14,11 @@
             <i class="fas fa-box-open">產品列表</i>
           </router-link>
         </li>
-        <!-- <li class="nav-item">
-          <router-link class="nav-link" to="/admin/orderList">
+        <li class="nav-item">
+          <router-link class="nav-link" to="/admin/orderlist">
             <i class="far fa-list-alt">訂單列表</i>
           </router-link>
-        </li> -->
+        </li>
         <li class="nav-item">
             <router-link class="nav-link" to="/admin/coupons">
               <i class="fas fa-comment-dollar"></i>
@@ -36,7 +36,7 @@
       </h6>
       <ul class="nav flex-column mb-2">
         <li class="nav-item">
-          <router-link class="nav-link" to="/admin/products">模擬訂單</router-link>
+          <router-link class="nav-link" to="/customer_order">模擬訂單</router-link>
         </li>
       </ul>
     </div>
