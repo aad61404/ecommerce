@@ -7,14 +7,12 @@
     <div class="row mt-4">
       <div class="col-md-4 mb-4" v-for="item in products" :key="item.id">
         <div class="card border-0 shadow-sm">
-          <div style="height: 150px; background-size: cover; background-position: center"
-          :style="{ backgroundImage: `url(${item.imageUrl})`}">
+          <div style="height: 150px; background-size: cover; background-position: center" :style="{ backgroundImage: `url(${item.imageUrl})`}">
           </div>
           <div class="card-body">
             <span class="badge badge-secondary float-right ml-2">{{ item.category }}</span>
             <h5 class="card-title">
-              <a href="#" class="text-dark"
-              >{{ item.title }}</a>
+              <a href="#" class="text-dark">{{ item.title }}</a>
             </h5>
             <p class="card-text">{{ item.content }}</p>
             <div class="d-flex justify-content-between align-items-baseline">
@@ -24,12 +22,12 @@
             </div>
           </div>
           <div class="card-footer d-flex">
-            <button type="button" class="btn btn-outline-secondary btn-sm"
-                @click="getProduct(item.id)">
+            <button type="button" class="btn btn-outline-secondary btn-sm" @click="getProduct(item.id)">
               <i class="fas fa-spinner fa-spin" v-if="status.loadingItem === item.id"></i>
               查看更多
             </button>
-            <button type="button" class="btn btn-outline-danger btn-sm ml-auto">
+            <button type="button" class="btn btn-outline-danger btn-sm ml-auto" 
+            @click="addToCart(item.id)">
               <i class="fas fa-spinner fa-spin" v-if="status.loadingItem === item.id"></i>
               加到購物車
             </button>
@@ -38,7 +36,8 @@
       </div>
     </div> <!-- row  end-->
     <!-- modal -->
-    <div class="modal fade" id="productModal"tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+      aria-hidden="true">
       <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -59,7 +58,7 @@
               <div class="h5" v-if="product.price">現在只要{{product.price}}元</div>
             </div>
             <select name class="form-control mt-3" v-model="product.num">
-              <option :value="num" v-for="num in 10" :key="num">選購{{num}}{{product.unit}}</option>
+              <option :value="num" v-for="num in 10" :key="num">選購{{ num }} {{ product.unit }}</option>
             </select>
           </div>
           <div class="modal-footer">
@@ -67,11 +66,7 @@
               小計
               <strong>{{product.num*product.price}}</strong>
             </div>
-            <button
-              type="button"
-              class="btn btn-primary"
-              @click="addtoCart(product.id,product.num)"
-            >
+            <button type="button" class="btn btn-primary" @click="addToCart(product.id, product.num)">
               <i class="fas"></i>
               加到購物車
             </button>
@@ -84,7 +79,7 @@
   </div>
 </template>
 <script>
-import $ from 'jquery';
+import $ from "jquery";
 
 export default {
   data() {
@@ -93,17 +88,17 @@ export default {
       isLoading: false,
       product: {},
       status: {
-          loadingItem: '',
+        loadingItem: ""
       }
     };
   },
   methods: {
-    getProducts(page = 1) { // 整體資料有prodcuts 有s
+    getProducts(page = 1) {
+      // 整體資料有prodcuts 有s
       const vm = this;
       const api = `${process.env.APIPATH}/api/${
         process.env.CUSTOMERPATH
       }/products?page=${page}`;
-    //   console.log('api:', api)
       vm.isLoading = true;
       this.$http.get(api).then(response => {
         vm.products = response.data.products;
@@ -111,19 +106,32 @@ export default {
         vm.isLoading = false;
       });
     },
-    getProduct(id) { // 單筆資料有prodcut 沒有s
+    getProduct(id) {
+      // 單筆資料有prodcut 沒有s
       const vm = this;
       const api = `${process.env.APIPATH}/api/${
         process.env.CUSTOMERPATH
       }/product/${id}`;
-      console.log('api:', api);
       vm.status.loadingItem = id;
       this.$http.get(api).then(response => {
-          vm.product = response.data.product;
-          $('#productModal').modal('show');
-        // vm.products = response.data.product;
+        vm.product = response.data.product;
+        $("#productModal").modal("show");
         console.log("response:", response);
-        vm.status.loadingItem = '';
+        vm.status.loadingItem = "";
+      });
+    },
+    addToCart(id, qty = 1) {
+      const vm = this;
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/cart/`;
+      console.log("api:", api);
+      vm.status.loadingItem = id;
+      const cart = {
+        product_id: id,
+        qty
+      };
+      this.$http.post(api, { data: cart }).then(response => {
+        console.log("response:", response);
+        vm.status.loadingItem = "";
       });
     }
   },
