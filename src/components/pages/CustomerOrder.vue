@@ -132,11 +132,23 @@ export default {
       this.$http.post(api, { data: cart }).then(response => {
         console.log("response:", response);
         vm.status.loadingItem = "";
+        vm.getCart();
+        $("#productModal").modal("hide");
       });
+    },
+    getCart() {
+      const vm = this;
+      const api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/cart`;
+      vm.isLoading = true;
+      this.$http.get(url).then((response) =>{
+        console.log(response);
+        vm.isLoading = false;
+      })
     }
   },
   created() {
     this.getProducts();
+    this.getCart();
   }
 };
 </script>
