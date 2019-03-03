@@ -87,15 +87,15 @@
           <tbody>
             <tr v-for="item in cart.carts" v-if="cart">
               <td class="align-middle">
-                <button type="button" class="btn btn-outline-danger btn-sm">
+                <button type="button" class="btn btn-outline-danger btn-sm" @click="removeCartItem(item.id)">
                   <i class="far fa-trash-alt"></i>
                 </button>
               </td>
               <td class="align-middle">
                 {{ item.product.title }}
-                <!-- <div class="text-success" v-if="item.coupon">
-          已套用優惠券
-        </div> -->
+                <div class="text-success" v-if="item.coupon">
+                  已套用優惠券
+                </div>
               </td>
               <td class="align-middle">{{ item.qty }}/{{ item.product.unit }}</td>
               <td class="align-middle text-right">{{ item.final_total }}</td>
@@ -106,17 +106,17 @@
               <td colspan="3" class="text-right">總計</td>
               <td class="text-right">{{ cart.total }}</td>
             </tr>
-            <tr>
+            <tr v-if=" cart.total !== cart.final_total">
               <td colspan="3" class="text-right text-success">折扣價</td>
               <td class="text-right text-success">{{ cart.final_total }}</td>
             </tr>
           </tfoot>
         </table>
-        
+
         <div class="input-group mb-3 input-group-sm">
-          <input type="text" class="form-control" placeholder="請輸入優惠碼">
+          <input type="text" class="form-control" v-model="coupon_code" placeholder="請輸入優惠碼">
           <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button">
+            <button class="btn btn-outline-secondary" type="button" @click="addCouponCode">
               套用優惠碼
             </button>
           </div>
@@ -137,9 +137,10 @@ export default {
       isLoading: false,
       product: {},
       status: {
-        loadingItem: ""
+        loadingItem: '',
       },
-      cart: {}
+      cart: {},
+      coupon_code: '',
     };
   },
   methods: {
@@ -193,8 +194,36 @@ export default {
       const api = `${process.env.APIPATH}/api/${process.env.CUSTOMERPATH}/cart`;
       vm.isLoading = true;
       this.$http.get(api).then(response => {
-        console.log(response);
+        // console.log(response);
         vm.cart = response.data.data; // 不是 response.data.data.carts ,需包含total 資訊
+        // console.log(vm.cart);
+        vm.isLoading = false;
+      });
+    },
+    removeCartItem(id) {
+      const vm = this;
+      const api = `${process.env.APIPATH}/api/${
+        process.env.CUSTOMERPATH
+      }/cart/${id}`;
+      vm.isLoading = true;
+      this.$http.delete(api).then(response => {
+        // console.log('response:', response);
+        vm.getCart();
+        vm.isLoading = false;
+        // vm.cart = response.data
+      });
+    },
+    addCouponCode() {
+      const vm = this;
+      const api = `${process.env.APIPATH}/api/${
+        process.env.CUSTOMERPATH
+      }/coupon`;
+      const coupon = {
+        code: vm.coupon_code
+      };
+      vm.isLoading = true;
+      this.$http.post(api, { data: coupon }).then(() => {
+        vm.getCart();
         vm.isLoading = false;
       });
     }
