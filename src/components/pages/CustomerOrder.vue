@@ -131,8 +131,8 @@
       <form class="col-md-6" @submit.prevent="createOrder">
         <div class="form-group">
           <label for="useremail">Email</label>
-          <input type="email" class="form-control" name="email" id="useremail" v-model="form.user.email" v-validate="'required|email'"
-            placeholder="請輸入 Email" > <!-- required  -->
+          <input type="email" class="form-control" name="email" id="useremail" v-model="form.user.email" :class="{'is-invalid': errors.has('email')}"
+            v-validate="'required|email'" placeholder="請輸入 Email"> <!-- required  -->
           <span class="text-danger" v-if="errors.has('email')">{{ errors.first('email') }}</span>
         </div>
 
@@ -145,24 +145,21 @@
 
         <div class="form-group">
           <label for="usertel">收件人電話</label>
-          <input type="tel" class="form-control" id="usertel" name="tel" 
-          v-model="form.user.tel" placeholder="請輸入電話"
-           v-validate="'required'">
+          <input type="tel" class="form-control" id="usertel" name="tel" v-model="form.user.tel" placeholder="請輸入電話"
+            v-validate="'required'">
           <span class="text-danger" v-if="errors.has('tel')">電話未填</span>
         </div>
 
         <div class="form-group">
           <label for="useraddress">收件人地址</label>
           <input type="address" class="form-control" name="address" id="useraddress" v-model="form.user.address"
-           v-validate="'required'"
-            placeholder="請輸入地址">
-          <span class="text-danger"  v-if="errors.has('address')">地址欄位不得留空</span>
+            v-validate="'required'" placeholder="請輸入地址">
+          <span class="text-danger" v-if="errors.has('address')">地址欄位不得留空</span>
         </div>
 
         <div class="form-group">
           <label for="useraddress">留言</label>
-          <textarea name="message" id="" class="form-control" cols="30" rows="10" v-model="form.message"  v-validate="'required'"></textarea>
-          <span class="text-danger" v-if="errors.has('message')">留言需填寫</span>
+          <textarea name="message" id="" class="form-control" cols="30" rows="10" v-model="form.message"></textarea>
         </div>
         <div class="text-right">
           <button class="btn btn-danger">送出訂單</button>
@@ -288,15 +285,18 @@ export default {
       }/order`;
       const order = vm.form;
       // vm.isLoading = true;
-      this.$validator.validate().then((result) => {
+      this.$validator.validate().then(result => {
         if (result) {
-          this.$http.post(api, { data: vm.form }).then(response => {
+          this.$http.post(api, { data: order }).then((response) => {
             console.log("response:", response);
+          if (response.data.success) {
+              vm.$router.push(`/customer_checkout/${response.data.orderId}`);
+            }
             // vm.isLoading = false;
           });
           // do stuff if not valid.
         } else {
-          console.log('欄位不完整:');
+          console.log("欄位不完整:");
         }
       });
     }

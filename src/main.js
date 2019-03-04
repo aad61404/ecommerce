@@ -23,6 +23,7 @@ import zhTWValidate from 'vee-validate/dist/locale/zh_TW';
 Vue.use(VeeValidate, {
   events: 'input|blur',
 });
+Vue.use(VeeValidate);
 VeeValidate.Validator.localize('zh_TW', zhTWValidate);
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
