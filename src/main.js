@@ -17,7 +17,13 @@ import currencyFilter from './filters/currency';
 import dateFilter from './filters/date';
 import Pagination from './components/Pagination'
 // import $ from 'jquery'
-
+import VeeValidate from 'vee-validate';
+import zhTWValidate from 'vee-validate/dist/locale/zh_TW';
+// Vue.use(VeeValidate);
+Vue.use(VeeValidate, {
+  events: 'input|blur',
+});
+VeeValidate.Validator.localize('zh_TW', zhTWValidate);
 Vue.config.productionTip = false;
 Vue.use(VueAxios, axios);
 Vue.filter('currency', currencyFilter);

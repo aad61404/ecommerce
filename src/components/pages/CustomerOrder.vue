@@ -125,6 +125,51 @@
     </div>
 
     <!-- 底下購物車 end -->
+
+    <!-- 訂單資訊 -->
+    <div class="my-5 row justify-content-center">
+      <form class="col-md-6" @submit.prevent="createOrder">
+        <div class="form-group">
+          <label for="useremail">Email</label>
+          <input type="email" class="form-control" name="email" id="useremail" v-model="form.user.email" v-validate="'required|email'"
+            placeholder="請輸入 Email" > <!-- required  -->
+          <span class="text-danger" v-if="errors.has('email')">{{ errors.first('email') }}</span>
+        </div>
+
+        <div class="form-group">
+          <label for="username">收件人姓名</label>
+          <input type="text" class="form-control" name="name" id="username" :class="{'is-invalid': errors.has('name')}"
+            v-model="form.user.name" placeholder="輸入姓名" v-validate="'required'">
+          <span class="text-danger" v-if="errors.has('name')">姓名必須輸入</span>
+        </div>
+
+        <div class="form-group">
+          <label for="usertel">收件人電話</label>
+          <input type="tel" class="form-control" id="usertel" name="tel" 
+          v-model="form.user.tel" placeholder="請輸入電話"
+           v-validate="'required'">
+          <span class="text-danger" v-if="errors.has('tel')">電話未填</span>
+        </div>
+
+        <div class="form-group">
+          <label for="useraddress">收件人地址</label>
+          <input type="address" class="form-control" name="address" id="useraddress" v-model="form.user.address"
+           v-validate="'required'"
+            placeholder="請輸入地址">
+          <span class="text-danger"  v-if="errors.has('address')">地址欄位不得留空</span>
+        </div>
+
+        <div class="form-group">
+          <label for="useraddress">留言</label>
+          <textarea name="message" id="" class="form-control" cols="30" rows="10" v-model="form.message"  v-validate="'required'"></textarea>
+          <span class="text-danger" v-if="errors.has('message')">留言需填寫</span>
+        </div>
+        <div class="text-right">
+          <button class="btn btn-danger">送出訂單</button>
+        </div>
+      </form>
+    </div>
+    <!-- 訂單資訊 end -->
   </div>
 </template>
 <script>
@@ -137,10 +182,19 @@ export default {
       isLoading: false,
       product: {},
       status: {
-        loadingItem: '',
+        loadingItem: ""
+      },
+      form: {
+        user: {
+          name: "",
+          email: "",
+          tel: "",
+          address: ""
+        },
+        message: ""
       },
       cart: {},
-      coupon_code: '',
+      coupon_code: ""
     };
   },
   methods: {
@@ -225,6 +279,25 @@ export default {
       this.$http.post(api, { data: coupon }).then(() => {
         vm.getCart();
         vm.isLoading = false;
+      });
+    },
+    createOrder() {
+      const vm = this;
+      const api = `${process.env.APIPATH}/api/${
+        process.env.CUSTOMERPATH
+      }/order`;
+      const order = vm.form;
+      // vm.isLoading = true;
+      this.$validator.validate().then((result) => {
+        if (result) {
+          this.$http.post(api, { data: vm.form }).then(response => {
+            console.log("response:", response);
+            // vm.isLoading = false;
+          });
+          // do stuff if not valid.
+        } else {
+          console.log('欄位不完整:');
+        }
       });
     }
   },
